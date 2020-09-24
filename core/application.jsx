@@ -11,6 +11,18 @@ class ApplicationStorage {
     @observable user;
     components = [];
 
+    // Override this with your own.
+    route(name, params, query, options)
+    {
+        return '/';
+    }
+
+    // Override this with your own
+    alert(message, options)
+    {
+        window.alert(message);
+    }
+
     renderComponent(model, view, props)
     {
         let meta = find(this.components, matches({model: model, view: view}));
