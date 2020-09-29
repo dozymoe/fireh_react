@@ -18,7 +18,7 @@ export default class DateParser
     serializeDateTime(value)
     {
         if (!value || !this.isValid(value)) return '';
-        return format(value, this.formats.SERIALIZED_DATETIME_FORMAT;
+        return format(value, this.formats.SERIALIZED_DATETIME_FORMAT);
     }
 
     deserializeDateTime(value)
