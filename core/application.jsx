@@ -31,13 +31,18 @@ class ApplicationStorage {
 }
 
 
-export function create_application(props)
+export function create_application(props, initializations)
 {
     const app = new ApplicationStorage();
     merge(app, props);
 
     // Initialize singletons
     app.history = createBrowserHistory();
+
+    for (let init of initializations)
+    {
+        init(app);
+    }
 
     return app;
 }
@@ -60,31 +65,31 @@ export function run(app, components, routes, element)
             element
         );
     }
-    components.forEach(function(item)
+    for (let c of components)
     {
-        if (item.selector)
+        if (c.selector)
         {
-            document.querySelectorAll(item.selector).forEach(function(element)
+            for (let el of document.querySelectorAll(c.selector))
             {
-                if (isFunction(item.component))
+                if (isFunction(c.component))
                 {
-                    item.component(app, element);
+                    c.component(app, el);
                 }
                 else
                 {
-                    let Component = item.component;
+                    let Component = c.component;
                     ReactDOM.render(
-                        <Provider app={app}>
-                          <Component/>
-                        </Provider>,
+                            <Provider app={app}>
+                              <Component/>
+                            </Provider>,
 
-                        element);
+                            el);
                 }
-            });
+            }
         }
         else
         {
-            app.components.push(item);
+            app.components.push(c);
         }
-    });
+    }
 }
