@@ -264,7 +264,6 @@ export function asPage(Component)
 
 export function asForm(Component)
 {
-    @inject('app')
     class Form extends Component
     {
         constructor(props)
@@ -273,7 +272,10 @@ export function asForm(Component)
             this.id = this.props.id || uniqueId('form_');
             this.onInputChange = this.onInputChange.bind(this);
             this.onFileInputChange = this.onFileInputChange.bind(this);
-            this.onSubmit = this.onSubmit.bind(this);
+            if (this.onSubmit)
+            {
+                this.onSubmit = this.onSubmit.bind(this);
+            }
         }
 
         onInputChange(event)
@@ -302,6 +304,7 @@ export function asForm(Component)
 
 export function asAjaxForm(Component)
 {
+    @inject('app')
     @asForm
     class AjaxForm extends Component
     {
