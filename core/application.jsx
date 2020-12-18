@@ -48,19 +48,22 @@ export function create_application(props, initializations)
 }
 
 
-export function run(app, components, routes, element)
+function run(app, components, routes, element, options)
 {
+    options = options || {};
+    let RouterComponent = options.Router || Router;
+
     if (element && routes && routes.length)
     {
         ReactDOM.render(
-            <Router history={app.history}>
+            <RouterComponent history={app.history}>
               <Provider app={app}>
                 <Switch>
                   {routes.map((item, idx) => <Route key={idx} path={item.path}
                       component={item.component}/>)}
                 </Switch>
               </Provider>
-            </Router>,
+            </RouterComponent>,
     
             element
         );
@@ -97,46 +100,5 @@ export function run(app, components, routes, element)
 
 export function runHashed(app, components, routes, element)
 {
-    if (element && routes && routes.length)
-    {
-        ReactDOM.render(
-            <HashRouter history={app.history}>
-              <Provider app={app}>
-                <Switch>
-                  {routes.map((item, idx) => <Route key={idx} path={item.path}
-                      component={item.component}/>)}
-                </Switch>
-              </Provider>
-            </HashRouter>,
-
-            element
-        );
-    }
-    for (let c of components)
-    {
-        if (c.selector)
-        {
-            for (let el of document.querySelectorAll(c.selector))
-            {
-                if (isFunction(c.component))
-                {
-                    c.component(app, el);
-                }
-                else
-                {
-                    let Component = c.component;
-                    ReactDOM.render(
-                            <Provider app={app}>
-                              <Component/>
-                            </Provider>,
-
-                            el);
-                }
-            }
-        }
-        else
-        {
-            app.components.push(c);
-        }
-    }
+    run(app, components, routes, element, {Router: HashRouter})
 }
