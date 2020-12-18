@@ -4,7 +4,7 @@ import { observable } from 'mobx';
 import { Provider } from 'mobx-react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Router, Switch } from 'react-router-dom';
+import { HashRouter, Route, Router, Switch } from 'react-router-dom';
 
 
 class ApplicationStorage {
@@ -62,6 +62,53 @@ export function run(app, components, routes, element)
               </Provider>
             </Router>,
     
+            element
+        );
+    }
+    for (let c of components)
+    {
+        if (c.selector)
+        {
+            for (let el of document.querySelectorAll(c.selector))
+            {
+                if (isFunction(c.component))
+                {
+                    c.component(app, el);
+                }
+                else
+                {
+                    let Component = c.component;
+                    ReactDOM.render(
+                            <Provider app={app}>
+                              <Component/>
+                            </Provider>,
+
+                            el);
+                }
+            }
+        }
+        else
+        {
+            app.components.push(c);
+        }
+    }
+}
+
+
+export function runHashed(app, components, routes, element)
+{
+    if (element && routes && routes.length)
+    {
+        ReactDOM.render(
+            <HashRouter history={app.history}>
+              <Provider app={app}>
+                <Switch>
+                  {routes.map((item, idx) => <Route key={idx} path={item.path}
+                      component={item.component}/>)}
+                </Switch>
+              </Provider>
+            </HashRouter>,
+
             element
         );
     }
