@@ -1,4 +1,4 @@
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory, createHashHistory } from 'history';
 import { find, isFunction, matches, merge } from 'lodash';
 import { observable } from 'mobx';
 import { Provider } from 'mobx-react';
@@ -31,13 +31,15 @@ class ApplicationStorage {
 }
 
 
-export function create_application(props, initializations)
+export function create_application(props, initializations, options)
 {
     const app = new ApplicationStorage();
     merge(app, props);
+    options = options || {};
 
     // Initialize singletons
-    app.history = createBrowserHistory();
+    app.history = options.history === 'hash' ? createHashHistory()
+            : createBrowserHistory();
 
     for (let init of initializations)
     {
@@ -48,10 +50,10 @@ export function create_application(props, initializations)
 }
 
 
-function run(app, components, routes, element, options)
+export function run(app, components, routes, element, options)
 {
     options = options || {};
-    let RouterComponent = options.Router || Router;
+    let RouterComponent = options.history === 'hash' ? HashRouter : Router;
 
     if (element && routes && routes.length)
     {
@@ -95,10 +97,4 @@ function run(app, components, routes, element, options)
             app.components.push(c);
         }
     }
-}
-
-
-export function runHashed(app, components, routes, element)
-{
-    run(app, components, routes, element, {Router: HashRouter})
 }
